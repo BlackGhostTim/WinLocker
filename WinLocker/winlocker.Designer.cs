@@ -49,7 +49,6 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(156, 22);
             this.textBox1.TabIndex = 1;
-            //this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -74,6 +73,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "winlocker";
             this.Text = "winlocker";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.winlocker_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
